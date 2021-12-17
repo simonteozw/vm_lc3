@@ -7,7 +7,7 @@
 #include <signal.h>
 
 // LC-3 has 2^16 memory locations
-uint16_t memory[UINT16_MAX]
+uint16_t memory[UINT16_MAX];
 
 // 8 general purpose registers, 1 PC, 1 conditional flag
 enum {
@@ -22,9 +22,9 @@ enum {
     R_PC,
     R_COND,
     R_COUNT
-}
+};
 
-uint16_t reg[R_COUNT]
+uint16_t reg[R_COUNT];
 
 enum {
     OP_BR = 0, // branch
@@ -43,12 +43,24 @@ enum {
     OP_RES,    // unused
     OP_LEA,    // load effective address
     OP_TRAP    // execute trap
-}
+};
 
 enum {
     FL_POS = 1 << 0, // positive
     FL_ZRO = 1 << 1, // zero
     FL_NEG = 1 << 2  // negative
+};
+
+uint16_t sign_extend(uint16_t x, int bitcount) {
+    // if x is negative add ones (using 2s complement)
+    if ((x >> (bitcount - 1)) & 1) x |= (0xFFFF << bitcount);
+    return x;
+}
+
+void update_flags(uint16_t r) {
+    if (reg[r] == 0) reg[R_COND] = FL_ZRO;
+    else if (reg[r] >> 15) reg[R_COND] = FL_NEG; // 1 in left most bit means -ve
+    else reg[R_COND] = FL_POS;
 }
 
 int main(int argc, const char* argv[]) {
@@ -66,19 +78,7 @@ int main(int argc, const char* argv[]) {
     }
 
     enum { PC_START = 0x3000 };
-    reg[R_PC] = PC_START
-
-    uint16_t sign_extend(uint16_t x, int bitcount) {
-        // if x is negative add ones (using 2s complement)
-        if ((x >> bitcount - 1) & 1) x |= (0xFFFF << bitcount);
-        return x;
-    }
-
-    void update_flags(uint16_t r) {
-        if (reg[r] == 0) reg[R_COND] = FL_ZRO;
-        else if (reg[r] >> 15) reg[R_COND] = FL_NEG; // 1 in left most bit means -ve
-        else reg[R_COND] = FL_POS;
-    }
+    reg[R_PC] = PC_START;
 
     int running = 1;
     while (running) {
