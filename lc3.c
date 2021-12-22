@@ -51,6 +51,11 @@ enum {
     FL_NEG = 1 << 2  // negative
 };
 
+enum {
+    MR_KBSR = 0xFE00, // keyboard status
+    MR_KBDR = 0xFE02  // keyboard data
+};
+
 uint16_t sign_extend(uint16_t x, int bitcount) {
     // if x is negative add ones (using 2s complement)
     if ((x >> (bitcount - 1)) & 1) x |= (0xFFFF << bitcount);
@@ -61,6 +66,30 @@ void update_flags(uint16_t r) {
     if (reg[r] == 0) reg[R_COND] = FL_ZRO;
     else if (reg[r] >> 15) reg[R_COND] = FL_NEG; // 1 in left most bit means -ve
     else reg[R_COND] = FL_POS;
+}
+
+uint16_t check_key()
+{
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(STDIN_FILENO, &readfds);
+
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    return select(1, &readfds, NULL, NULL, &timeout) != 0;
+}
+
+uint16_t mem_read(uint16_t address) {
+    if (address == MR_KBSR) {
+        if (check_key()) {
+            memory[MR_KBSR] = (1 << 15);
+            memory[MR_KBDR] = getchar();
+        } else {
+            memory[MR_KBSR] = 0;
+        }
+    }
+    return memory[address];
 }
 
 int main(int argc, const char* argv[]) {
@@ -113,6 +142,13 @@ int main(int argc, const char* argv[]) {
             }
             break;
             case OP_LD:
+            {
+                uint16_t dr = (instr >> 9) & 0x7;
+                uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+                reg[dr] = mem_read(reg[R_PC] + pc_offset);
+                update_flags(dr);
+            }
+            break;
             case OP_ST:
             case OP_JSR:
             case OP_AND:
