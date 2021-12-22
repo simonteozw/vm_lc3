@@ -80,6 +80,10 @@ uint16_t check_key()
     return select(1, &readfds, NULL, NULL, &timeout) != 0;
 }
 
+void mem_write(uint16_t address, uint16_t val) {
+    memory[address] = val;
+}
+
 uint16_t mem_read(uint16_t address) {
     if (address == MR_KBSR) {
         if (check_key()) {
@@ -150,6 +154,12 @@ int main(int argc, const char* argv[]) {
             }
             break;
             case OP_ST:
+            {
+                uint16_t sr = (instr >> 9) & 0x7;
+                uint16_t pc_offset = sign_extend(instr & 0x1FF, 9);
+                mem_write(reg[R_PC] + pc_offset, reg[sr]);
+            }
+            break;
             case OP_JSR:
             case OP_AND:
             case OP_LDR:
