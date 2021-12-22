@@ -161,6 +161,18 @@ int main(int argc, const char* argv[]) {
             }
             break;
             case OP_JSR:
+            {
+                uint16_t long_flag = (instr >> 11) & 0x1;
+                reg[R_R7] = reg[R_PC];
+                if (long_flag) {
+                    uint16_t long_pc_offset = sign_extend(instr & 0x7FF, 11);
+                    reg[R_PC] += long_pc_offset; // JSR
+                } else {
+                    uint16_t base_r = (instr >> 6) & 0x7;
+                    reg[R_PC] = reg[base_r]; // JSRR
+                }
+            }
+            break;
             case OP_AND:
             case OP_LDR:
             case OP_STR:
