@@ -88,23 +88,30 @@ int main(int argc, const char* argv[]) {
 
         switch (op) {
             case OP_BR:
-            case OP_ADD:
-                {
-                    uint16_t dr = (instr >> 9) & 0x7;
-                    uint16_t sr1 = (instr >> 6) & 0x7;
-                    uint16_t imm_flag = (instr >> 5) & 0x1;
-
-                    if (imm_flag) {
-                        uint16_t imm = sign_extend(instr & 0x1F, 5);
-                        reg[dr] = reg[sr1] + imm;
-                    } else {
-                        uint16_t sr2 = instr & 0x7;
-                        reg[dr] = reg[sr1] + reg[sr2];
-                    }
-
-                    update_flags(dr);
+            {
+                uint16_t nzp = (instr >> 9) & 0x7;
+                if (nzp & reg[R_COND]) {
+                    reg[R_PC] += sign_extend(instr & 0x1FF, 9); // pc offset
                 }
-                break;
+            }
+            break;
+            case OP_ADD:
+            {
+                uint16_t dr = (instr >> 9) & 0x7;
+                uint16_t sr1 = (instr >> 6) & 0x7;
+                uint16_t imm_flag = (instr >> 5) & 0x1;
+
+                if (imm_flag) {
+                    uint16_t imm = sign_extend(instr & 0x1F, 5);
+                    reg[dr] = reg[sr1] + imm;
+                } else {
+                    uint16_t sr2 = instr & 0x7;
+                    reg[dr] = reg[sr1] + reg[sr2];
+                }
+
+                update_flags(dr);
+            }
+            break;
             case OP_LD:
             case OP_ST:
             case OP_JSR:
