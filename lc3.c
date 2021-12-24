@@ -210,14 +210,23 @@ int main(int argc, const char* argv[]) {
                 mem_write(reg[base_r] + pc_offset, reg[sr]);
             }
             break;
-            case OP_RTI:
             case OP_NOT:
+            {
+                uint16_t dr = (instr >> 9) & 0x7;
+                uint16_t sr = (instr >> 6) & 0x7;
+
+                reg[dr] = ~reg[sr];
+
+                update_flags(dr);
+            }
+            break;
             case OP_LDI:
             case OP_STI:
             case OP_JMP:
-            case OP_RES:
             case OP_LEA:
             case OP_TRAP:
+            case OP_RTI:
+            case OP_RES:
             default:
             break;
         }
