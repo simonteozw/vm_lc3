@@ -191,6 +191,16 @@ int main(int argc, const char* argv[]) {
             }
             break;
             case OP_LDR:
+            {
+                uint16_t dr = (instr >> 9) & 0x7;
+                uint16_t base_r = (instr >> 6) & 0x7;
+                uint16_t pc_offset = sign_extend(instr & 0x3F, 6);
+
+                reg[dr] = mem_read(reg[base_r] + pc_offset);
+
+                update_flags(dr);
+            }
+            break;
             case OP_STR:
             case OP_RTI:
             case OP_NOT:
