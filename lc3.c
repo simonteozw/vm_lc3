@@ -301,6 +301,20 @@ int main(int argc, const char* argv[]) {
                     }
                     break;
                     case TRAP_PUTSP:
+                    {
+                        uint16_t* c = memory + reg[R_R0];
+
+                        while (*c) {
+                            char c1 = (*c) & 0xFF;
+                            putc(c1, stdout);
+                            char c2 = (*c) >> 8;
+                            if (c2) putc(c2, stdout);
+                            c++;
+                        }
+
+                        fflush(stdout);
+                    }
+                    break;
                     case TRAP_HALT:
                     default:
                     break;
