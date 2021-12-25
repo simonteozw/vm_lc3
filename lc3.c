@@ -105,6 +105,35 @@ uint16_t mem_read(uint16_t address) {
     return memory[address];
 }
 
+uint16_t swap16(uint16_t x)
+{
+    return (x << 8) | (x >> 8);
+}
+
+void read_image_file(FILE* file) {
+    uint16_t origin;
+    fread(&origin, sizeof(origin), 1, file); // read 1 element of size origin bytes = 2 bytes from file to origin
+    origin = swap16(origin); // LC3 is big endian but most programs are little endian
+
+    uint16_t max_read = UINT16_MAX - origin;
+    uint16_t* p = memory + origin;
+    size_t read = fread(p, sizeof(uint16_t), max_read, file); // read max_read elements of size uint16_t bytes = 2 bytes from file to p
+
+    while (read > 0) {
+        *p = swap16(*p);
+        p++;
+        read--;
+    }
+}
+
+int read_image(const char* image_path) {
+    FILE* file = fopen(image_path, "rb");
+    if (!file) return 0;
+    read_image_file(file);
+    fclose(file);
+    return 1;
+}
+
 int main(int argc, const char* argv[]) {
 
     if (argc < 2) {
@@ -330,6 +359,7 @@ int main(int argc, const char* argv[]) {
             case OP_RTI:
             case OP_RES:
             default:
+            abort();
             break;
         }
     }
