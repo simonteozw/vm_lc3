@@ -33,21 +33,21 @@ Personal Implementation of a Virtual Machine (VM) written in C to simulate a fic
 ## 5 types of Virtualization
 
 1. Hardware Virtualization
-- virtual versions of computers and operating systems (VMs) are created and consolidated into a single, primary, physical server
-- hypervisor communicates directly with a physical server’s disk space and CPU to manage the VMs
-- hardware virtualization, which is also known as server virtualization, allows one machine to simultaneously run different operating systems
+    - virtual versions of computers and operating systems (VMs) are created and consolidated into a single, primary, physical server
+    - hypervisor communicates directly with a physical server’s disk space and CPU to manage the VMs
+    - hardware virtualization, which is also known as server virtualization, allows one machine to simultaneously run different operating systems
 2. Software Virtualization
-- creates a computer system complete with hardware that allows one or more guest operating systems to run on a physical host machine
-- Android OS can run on a host machine that is natively using a Microsoft Windows OS
-- applications can be virtualized and delivered from a server to an end user’s device, such as a laptop or smartphone
-- allows employees to access centrally hosted applications when working remotely
+    - creates a computer system complete with hardware that allows one or more guest operating systems to run on a physical host machine
+    - Android OS can run on a host machine that is natively using a Microsoft Windows OS
+    - applications can be virtualized and delivered from a server to an end user’s device, such as a laptop or smartphone
+    - allows employees to access centrally hosted applications when working remotely
 3. Storage Virtualization
-- consolidate multiple physical storage devices to appear as a single storage device
-- increased performance and speed, load balancing and reduced costs
-- helps with disaster recovery planning
+    - consolidate multiple physical storage devices to appear as a single storage device
+    - increased performance and speed, load balancing and reduced costs
+    - helps with disaster recovery planning
 4. Network Virtualization
-- multiple sub-networks can be created on the same physical network by combining equipment into a single, software-based virtual network resource
-- divides available bandwidth into multiple, independent channels, each of which can be assigned to servers and devices in real time
+    - multiple sub-networks can be created on the same physical network by combining equipment into a single, software-based virtual network resource
+    - divides available bandwidth into multiple, independent channels, each of which can be assigned to servers and devices in real time
 5. Desktop Virtualization
-- separates the desktop environment from the physical device and stores a desktop on a remote server
-- allows users to access their desktops from anywhere on any device
+    - separates the desktop environment from the physical device and stores a desktop on a remote server
+    - allows users to access their desktops from anywhere on any device
