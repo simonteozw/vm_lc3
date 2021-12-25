@@ -316,6 +316,12 @@ int main(int argc, const char* argv[]) {
                     }
                     break;
                     case TRAP_HALT:
+                    {
+                        puts("HALT");
+                        fflush(stdout);
+                        running = 0;
+                    }
+                    break;
                     default:
                     break;
                 }
