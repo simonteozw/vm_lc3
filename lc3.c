@@ -292,6 +292,14 @@ int main(int argc, const char* argv[]) {
                     }
                     break;
                     case TRAP_IN:
+                    {
+                        printf("Enter a character: ");
+                        reg[R_R0] = (uint16_t) getchar();
+
+                        putc((char) reg[R_R0], stdout);
+                        fflush(stdout);
+                    }
+                    break;
                     case TRAP_PUTSP:
                     case TRAP_HALT:
                     default:
