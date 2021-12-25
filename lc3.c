@@ -56,6 +56,15 @@ enum {
     MR_KBDR = 0xFE02  // keyboard data
 };
 
+enum {
+    TRAP_GETC = 0x20,   // get character from keyboard, not echoed onto terminal
+    TRAP_OUT = 0x21,    // output character
+    TRAP_PUTS = 0x22,   // output word string
+    TRAP_IN = 0x23,     // get character from keyboard, echoed onto terminal
+    TRAP_PUTSP = 0x24,  // output byte string
+    TRAP_HALT = 0x25    // halt the program
+};
+
 uint16_t sign_extend(uint16_t x, int bitcount) {
     // if x is negative add ones (using 2s complement)
     if ((x >> (bitcount - 1)) & 1) x |= (0xFFFF << bitcount);
@@ -256,6 +265,20 @@ int main(int argc, const char* argv[]) {
             }
             break;
             case OP_TRAP:
+            {
+                uint16_t trapvect = instr & 0xFF;
+                switch (trapvect) {
+                    case TRAP_GETC:
+                    case TRAP_OUT:
+                    case TRAP_PUTS:
+                    case TRAP_IN:
+                    case TRAP_PUTSP:
+                    case TRAP_HALT:
+                    default:
+                    break;
+                }
+            }
+            break;
             case OP_RTI:
             case OP_RES:
             default:
