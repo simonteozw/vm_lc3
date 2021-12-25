@@ -269,7 +269,16 @@ int main(int argc, const char* argv[]) {
                 uint16_t trapvect = instr & 0xFF;
                 switch (trapvect) {
                     case TRAP_GETC:
+                    {
+                        reg[R_R0] = (uint16_t) getchar();
+                    }
+                    break;
                     case TRAP_OUT:
+                    {
+                        putc((char) reg[R_R0], stdout);
+                        fflush(stdout);
+                    }
+                    break;
                     case TRAP_PUTS:
                     case TRAP_IN:
                     case TRAP_PUTSP:
