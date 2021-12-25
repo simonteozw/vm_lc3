@@ -83,8 +83,7 @@ void update_flags(uint16_t r) {
     else reg[R_COND] = FL_POS;
 }
 
-uint16_t check_key()
-{
+uint16_t check_key() {
     fd_set readfds;
     FD_ZERO(&readfds);
     FD_SET(STDIN_FILENO, &readfds);
@@ -111,8 +110,7 @@ uint16_t mem_read(uint16_t address) {
     return memory[address];
 }
 
-uint16_t swap16(uint16_t x)
-{
+uint16_t swap16(uint16_t x) {
     return (x << 8) | (x >> 8);
 }
 
@@ -142,21 +140,18 @@ int read_image(const char* image_path) {
 
 struct termios original_tio;
 
-void disable_input_buffering()
-{
+void disable_input_buffering() {
     tcgetattr(STDIN_FILENO, &original_tio);
     struct termios new_tio = original_tio;
     new_tio.c_lflag &= ~ICANON & ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
 }
 
-void restore_input_buffering()
-{
+void restore_input_buffering() {
     tcsetattr(STDIN_FILENO, TCSANOW, &original_tio);
 }
 
-void handle_interrupt(int signal)
-{
+void handle_interrupt(int signal) {
     restore_input_buffering();
     printf("\n");
     exit(-2);
@@ -249,11 +244,11 @@ int main(int argc, const char* argv[]) {
                 uint16_t imm_flag = (instr >> 5) & 0x1;
 
                 if (imm_flag) {
-                    uint16_t sr2 = instr & 0x7;
-                    reg[dr] = reg[sr1] & reg[sr2];
-                } else {
                     uint16_t imm = sign_extend(instr & 0x1F, 5);
                     reg[dr] = reg[sr1] & imm;
+                } else {
+                    uint16_t sr2 = instr & 0x7;
+                    reg[dr] = reg[sr1] & reg[sr2];
                 }
 
                 update_flags(dr);
