@@ -1,10 +1,16 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <sys/termios.h>
+#include <string.h>
 #include <signal.h>
+// unix
+#include <unistd.h>
+#include <fcntl.h>
+
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/termios.h>
+#include <sys/mman.h>
 
 // LC-3 has 2^16 memory locations
 uint16_t memory[UINT16_MAX];
@@ -134,6 +140,28 @@ int read_image(const char* image_path) {
     return 1;
 }
 
+struct termios original_tio;
+
+void disable_input_buffering()
+{
+    tcgetattr(STDIN_FILENO, &original_tio);
+    struct termios new_tio = original_tio;
+    new_tio.c_lflag &= ~ICANON & ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_tio);
+}
+
+void restore_input_buffering()
+{
+    tcsetattr(STDIN_FILENO, TCSANOW, &original_tio);
+}
+
+void handle_interrupt(int signal)
+{
+    restore_input_buffering();
+    printf("\n");
+    exit(-2);
+}
+
 int main(int argc, const char* argv[]) {
 
     if (argc < 2) {
@@ -147,6 +175,9 @@ int main(int argc, const char* argv[]) {
             exit(1);
         }
     }
+
+    signal(SIGINT, handle_interrupt);
+    disable_input_buffering();
 
     enum { PC_START = 0x3000 };
     reg[R_PC] = PC_START;
@@ -363,4 +394,8 @@ int main(int argc, const char* argv[]) {
             break;
         }
     }
+
+    restore_input_buffering();
+
+    return 0;
 }
